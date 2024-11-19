@@ -22,34 +22,48 @@
             padding: 10px;
             background-color: #f9f9f9;
         }
+        .output span {
+            display: block;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Show me the Data</h1>
         <div>
-            <h3><Replace Title 1></h3>
-            <button onclick="fetchData(1)">Display Data</button>
-            <div id="output1" class="output">No data fetched yet.</div>
-        </div>
-        <div>
-            <h3><Replace Title 2></h3>
-            <button onclick="fetchData(2)">Display Data</button>
-            <div id="output2" class="output">No data fetched yet.</div>
-        </div>
-        <div>
-            <h3><Replace Title 2></h3>
-            <button onclick="fetchData(3)">Display Data</button>
-            <div id="output3" class="output">No data fetched yet.</div>
+            <h3>Dog Facts API</h3>
+            <button onclick="fetchDogFacts()">Display Dog Facts</button>
+            <div id="dogFactsOutput" class="output">No data fetched yet.</div>
         </div>
     </div>
 
     <script>
+        async function fetchDogFacts() {
+            const outputElement = document.getElementById("dogFactsOutput");
+            outputElement.innerHTML = "Loading dog facts...";
 
-        async function fetchData(site) {
-            // You can make it work!
+            try {
+                const response = await fetch("https://dogapi.dog/api/facts?number=5");
+                if (!response.ok) throw new Error("Failed to fetch dog facts");
+
+                const data = await response.json();
+                if (data.success && Array.isArray(data.facts)) {
+                    displayDogFacts(outputElement, data.facts);
+                } else {
+                    throw new Error("Invalid data format received from API");
+                }
+            } catch (error) {
+                outputElement.innerHTML = `<span style="color: red;">Error fetching data: ${error.message}</span>`;
+            }
         }
-           
+
+        // Display the fetched dog facts
+        function displayDogFacts(outputElement, facts) {
+            outputElement.innerHTML = facts
+                .map(fact => `<span>🐾 ${fact}</span>`)
+                .join("");
+        }
     </script>
 </body>
 </html>
